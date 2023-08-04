@@ -1,0 +1,200 @@
+---
+title: "TP programación básica en R"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE,message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE,message=TRUE, warning=TRUE)
+```
+
+#### **Ejercicio 1**
+
+El uso de funciones permite evitar la repetición de código para tareas similares, y a su vez contribuye a evitar errores generados al copiar y pegar código.
+Por ejemplo, al trabajar sobre el objeto
+lluvia_pampa (obtenido a partir de leer el excel
+lluvia_pampa.xlsx) se puede querer obtener la suma de precipitaciones para cada localidad en un mes y año determinado. Una manera de hacerlo es la siguiente:
+
+```{r message=FALSE, warning=FALSE}
+library(readxl)
+library(tidyverse)
+# Para enero antes de 1970
+lluvia_pampa <- read_excel("lluvia_pampa.xlsx")
+tapply(lluvia_pampa$ene[lluvia_pampa$año<1970],
+lluvia_pampa$localidad[lluvia_pampa$año<1970], sum)
+
+# Para marzo antes de 1980
+tapply(lluvia_pampa$mar[lluvia_pampa$año<1980],
+lluvia_pampa$localidad[lluvia_pampa$año<1980],sum)
+
+# Para agosto antes del 2000
+tapply(lluvia_pampa$ago[lluvia_pampa$año<2000],
+lluvia_pampa$localidad[lluvia_pampa$año<2000], sum)
+
+# O en tidyverse:
+lluvia_pampa %>%
+    filter(año<1970) %>%
+    group_by(localidad) %>%
+    summarise(total_enero = sum(ene))
+
+lluvia_pampa %>%
+filter(año<1980) %>%
+group_by(localidad) %>%
+summarise(total_marzo = sum(mar))
+
+lluvia_pampa %>%
+filter(año<2000) %>%
+group_by(localidad) %>%
+summarise(total_agosto = sum(ago))
+```
+
+
+Y así sucesivamente, Una manera más eficiente de hacerlo sería generar una función que tome como argumentos al dataset, el mes y el año tope de filtrado para poder reutilizarla sin correr el riesgo de equivocarnos (ni gastar tiempo en repetir código)
+
+#### Tidyverse
+```{r message=FALSE, warning=FALSE}
+suma_mes_anio <- function (dataset, anio, mes) {
+dataset %>%
+filter(año<anio) %>%
+group_by(localidad) %>%
+summarise(total = sum({{mes}}))
+}
+suma_mes_anio(lluvia_pampa, 2020, ene)
+```
+
+#### Base 
+
+```{r message=FALSE, warning=FALSE}
+suma_mes_anio_base <- function (dataset, anio, mes) {
+  dataset=lluvia_pampa
+  mes="ene"
+  anio=1973
+   tapply(dataset[[mes]][dataset$año<anio], 
+          dataset$localidad[dataset$año<anio], sum)
+} 
+
+suma_mes_anio(lluvia_pampa, 1973, ene)
+```
+
+Genere una función `dif_maxmin()` que genere por un par de años (ej: 1999 y 2000)  la diferencia entre el máximo y el mínimo volumen de precipitaciones entre el máximo y el mínimo volumen de precipitaciones
+
+
+Ejemplo de uso:
+
+`dif_maxmin(lluvia_pampa, 1999, 2000)`
+
+```{r eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+dif_maxmin <- function(dataset, anio_menor, anio_mayor){
+resultado <- dataset %>%
+filter(año == anio_menor | año == anio_mayor) %>%
+arrange(año) %>% #Ordenamos por año de menor a mayor
+rowwise() %>% # Indica que el calculo debe realizarse a nivel fila
+mutate(valor_minimo_localidad = min(c_across(ene : dic)),
+valor_maximo_localidad = max(c_across(ene : dic))) %>%
+ungroup() %>%
+group_by(año) %>%
+summarise(minimo_anual = min(valor_minimo_localidad),
+maximo_anual = max(valor_maximo_localidad)) #%>%
+#view()
+print(paste0("La diferencia entre precipitaciones mínimas es:", resultado$minimo_anual [2] - resultado$minimo_anual [1]))
+print(paste0("La diferencia entre precipitaciones máximas es:", resultado$maximo_anual [2] - resultado$maximo_anual [1]))
+}
+dif_maxmin(lluvia_pampa, 2005, 2006)
+```
+
+
+#### **Ejercicio 2**
+
+El siguiente código crea un vector
+datos con una distribución normal, que tiene 100 elementos,
+con media = 5, y desvío = 2.
+
+```{r message=FALSE, warning=FALSE}
+datos<- rnorm(100, 5, 2)
+head(datos)
+```
+
+Se desea crear una función que se llame `sim_normal()` y que tome como argumentos una cantidad de elementos (n), una media (mu) y un desvío estándar (s) y genere un vector como el anterior con distribución normal y tres visualizaciones (histograma, gráfico de densidad y boxplot)
+Por ejemplo:
+Para obtener 3 visualizaciones de una distribución de n = 100, mu = 3 0, s = 2)
+`sim_normal(100, 30, 2)` 
+
+Para obtener 3 visualizaciones de una distribución de n = 10000, mu = 40, s = 2)
+`sim_normal(10000, 40, 2)` 
+
+Genere la función `sim_normal()` completando los espacios punteados
+
+------------------------------------------------------------------------
+
+
+`sim_normal <- function(n,mu,s) {`
+
+`datos<-rnorm(n, mu, s)`
+
+`par(mfrow = c(1, 3))`
+
+`............................`
+
+`............................`
+
+`............................`
+
+`par(mfrow = c(1, 1))`
+
+`(valores<- c(n,mu,s))`
+
+`names(valores)<-...................`
+
+`print(valores)`
+
+}
+
+Si la función se creó correctamente, al ejecutar este siguiente código deberían obtenerse gráficos como los siguientes:
+`sim_normal(100, 30, 2)`
+Aclaración: las visualizaciones obtenidas no necesariamente coincidirán con el ejemplo a continuación dado que dependen de los valores (parámetros) de “datos”
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+sim_normal <- function(n,mu,s) {
+  datos<-rnorm(n, mu, s)
+  par(mfrow = c(1, 3))
+  hist(datos, main="Histograma")
+  plot(density(datos), main="Densidad")
+  boxplot(datos,main="Boxplot")
+  par(mfrow = c(1, 1))
+  (valores<- c(n,mu,s))
+  names(valores)<-c("n", "media","desvio")
+  print(valores)
+}
+
+sim_normal(100,30,2)
+```
+
+#### **Ejercicio 3**
+
+Investigue la función `sample()` del paquete `base` y describa en pocas palabras para que se utiliza.
+
+Con los siguientes comandos genere una base de datos:
+
+
+```{r results = 'hide'}
+set.seed(7)  # Para hacer el ejemplo reproducible`
+edad<- sample(20:45, 20, replace = T)  # edad`
+sexo<- sample(c("M", "F"), 20, replace = T)  # sexo`
+lugar<-sample(c("capital", "provincia"), 20, replace = T) 
+```
+
+
+Usando la función correspondiente a la familia `apply` obtenga
+
+-   la media de la edad por sexo.
+-   la media de edad por lugar.
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+data<-data.frame(edad, sexo, lugar)
+#la media de la edad por sexo
+tapply(edad, sexo, mean)
+tapply(edad, lugar, mean)
+```

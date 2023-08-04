@@ -11,6 +11,9 @@ output:
     fig_caption: true
     css: styles.css
     theme: journal
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
 ```{r setup, include=FALSE}
@@ -60,26 +63,46 @@ lenguaje.
 webshot::webshot("https://adv-r.hadley.nz/index.html", cliprect = c(0, 0, 1000, 1080), )
 ```
 
-
 # Simulaciones de funciones de distribución
 
 La simulación de funciones de distribución puede aplicarse para:
 
-* Análisis de Monte Carlo: 
+-   Análisis de Monte Carlo:
 
-Puedes utilizar estas funciones para simular datos que siguen una determinada distribución y realizar análisis de Monte Carlo. Por ejemplo, si estás estudiando el comportamiento de un sistema financiero, puedes simular datos aleatorios de una distribución normal para representar los rendimientos diarios de una acción y luego realizar miles de simulaciones para evaluar el riesgo y la rentabilidad potencial.
+Puedes utilizar estas funciones para simular datos que siguen una
+determinada distribución y realizar análisis de Monte Carlo. Por
+ejemplo, si estás estudiando el comportamiento de un sistema financiero,
+puedes simular datos aleatorios de una distribución normal para
+representar los rendimientos diarios de una acción y luego realizar
+miles de simulaciones para evaluar el riesgo y la rentabilidad
+potencial.
 
-* Pruebas de hipótesis: 
+-   Pruebas de hipótesis:
 
-Puedes generar datos aleatorios bajo una hipótesis nula y utilizarlos para realizar pruebas de hipótesis. Por ejemplo, si deseas probar si la media de una muestra es igual a cero, puedes generar datos aleatorios de una distribución normal con media cero y compararlos con tu muestra observada utilizando una prueba de hipótesis como la prueba t.
+Puedes generar datos aleatorios bajo una hipótesis nula y utilizarlos
+para realizar pruebas de hipótesis. Por ejemplo, si deseas probar si la
+media de una muestra es igual a cero, puedes generar datos aleatorios de
+una distribución normal con media cero y compararlos con tu muestra
+observada utilizando una prueba de hipótesis como la prueba t.
 
-* Simulación de escenarios: 
+-   Simulación de escenarios:
 
-Puedes utilizar estas funciones para simular diferentes escenarios y evaluar el impacto de diferentes variables en un sistema o modelo. Por ejemplo, si estás construyendo un modelo de simulación para predecir el tiempo de espera en una cola de atención al cliente, puedes generar datos aleatorios de una distribución exponencial para simular los tiempos de llegada de los clientes y analizar cómo diferentes tasas de llegada afectan el tiempo de espera promedio.
+Puedes utilizar estas funciones para simular diferentes escenarios y
+evaluar el impacto de diferentes variables en un sistema o modelo. Por
+ejemplo, si estás construyendo un modelo de simulación para predecir el
+tiempo de espera en una cola de atención al cliente, puedes generar
+datos aleatorios de una distribución exponencial para simular los
+tiempos de llegada de los clientes y analizar cómo diferentes tasas de
+llegada afectan el tiempo de espera promedio.
 
-* Estimación de parámetros: 
+-   Estimación de parámetros:
 
-Puedes utilizar estas funciones para generar datos sintéticos y ajustar modelos estadísticos para estimar los parámetros desconocidos. Por ejemplo, si estás ajustando un modelo lineal, puedes generar datos aleatorios siguiendo una distribución normal con ciertos parámetros, ajustar el modelo a los datos sintéticos y luego comparar los parámetros estimados con los verdaderos.
+Puedes utilizar estas funciones para generar datos sintéticos y ajustar
+modelos estadísticos para estimar los parámetros desconocidos. Por
+ejemplo, si estás ajustando un modelo lineal, puedes generar datos
+aleatorios siguiendo una distribución normal con ciertos parámetros,
+ajustar el modelo a los datos sintéticos y luego comparar los parámetros
+estimados con los verdaderos.
 
 Podemos generar datos simulados bajo distintas funciones de
 distribución, algunos ejemplos son
@@ -96,18 +119,17 @@ distribución, algunos ejemplos son
 | uniform        | `unif()`     | continua             |
 
 `R` dispone de cuatro funciones de simulación de distribuciones. Se
-puede acceder a cada una de ellas simplemente precediendo el nombre de la distribución que figura en la tabla anterior por la letra que se indica a continuación:
+puede acceder a cada una de ellas simplemente precediendo el nombre de
+la distribución que figura en la tabla anterior por la letra que se
+indica a continuación:
 
 ```{r echo=FALSE, fig.align='center', fig.height=6, fig.width=6, out.width="70%"}
 knitr::include_graphics("Fig/normal.jpg")
 ```
 
-
-*r*: función para simular datos con dicha distribución.
-*d*: función de densidad o de probabilidad.
-*p*: función de distribución.
-*q*: función para el cálculo de cuantiles.
-
+*r*: función para simular datos con dicha distribución. *d*: función de
+densidad o de probabilidad. *p*: función de distribución. *q*: función
+para el cálculo de cuantiles.
 
 Combinando prefijos y sufijos, la función de *densidad\** de una
 distribución normal se obtiene con `dnorm()`, la función de
@@ -233,21 +255,25 @@ Veremos como se utilizan las dos más usuales:
 
 La sintaxis de estas funciones es:
 
-    apply(X,       # Array, matriz o data frame
-          MARGIN,  # 1: columnas, 2: filas, c(1, 2): filas y columnas
-          FUN,     # Función a ser aplicada
-          ...)     # Argumentos adicionales para ser pasados a FUN
+```         
+apply(X,       # Array, matriz o data frame
+      MARGIN,  # 1: columnas, 2: filas, c(1, 2): filas y columnas
+      FUN,     # Función a ser aplicada
+      ...)     # Argumentos adicionales para ser pasados a FUN
+```
 
 los tres primeros argumentos son los más habituales:
 
 `apply(matrix, 1/2, f)`
 
-    tapply(X,                # Objeto divisible (matriz, data frame, ...)
-           INDEX,            # Lista(s) de factores de la misma longitud que X
-           FUN,              # Función que se aplicará a los factores (o NULL)
-           ...,              # Argumentos adicionales para pasar a FUN
-           default = NA,     # Si simplify = TRUE, es el valor de inicialización del array
-           simplify = TRUE)  # Si FALSE devuelve una lista
+```         
+tapply(X,                # Objeto divisible (matriz, data frame, ...)
+       INDEX,            # Lista(s) de factores de la misma longitud que X
+       FUN,              # Función que se aplicará a los factores (o NULL)
+       ...,              # Argumentos adicionales para pasar a FUN
+       default = NA,     # Si simplify = TRUE, es el valor de inicialización del array
+       simplify = TRUE)  # Si FALSE devuelve una lista
+```
 
 los tres primeros argumentos son los más habituales:
 
@@ -320,70 +346,72 @@ literatura podremos encontrarnos con distintos enfoques. A continuación
 mostramos las formas alternativas que ofrece `library(tidyverse)` como
 opción a la familia `apply` de `library(base)`
 
-    __________________________________________________
-    # con library(base)
-    apply(lluvia[3], 2, max)
+```         
+__________________________________________________
+# con library(base)
+apply(lluvia[3], 2, max)
 
-    # con library(tidyverse)
-    lluvia %>% select(3) %>% max()
-    __________________________________________________
-    # con library(base)
-    apply(lluvia[lluvia$localidad=="MIRAMAR",3 ],2,max)
+# con library(tidyverse)
+lluvia %>% select(3) %>% max()
+__________________________________________________
+# con library(base)
+apply(lluvia[lluvia$localidad=="MIRAMAR",3 ],2,max)
 
-    # con library(tidyverse)
-    lluvia %>% 
-      filter(localidad == 'MIRAMAR') %>%
-      select(3) %>% 
-      max()
-    __________________________________________________
-    # con library(base)
-    apply(lluvia[lluvia$localidad=="TRES ARROYOS-AERO",3 ],2,max)
+# con library(tidyverse)
+lluvia %>% 
+  filter(localidad == 'MIRAMAR') %>%
+  select(3) %>% 
+  max()
+__________________________________________________
+# con library(base)
+apply(lluvia[lluvia$localidad=="TRES ARROYOS-AERO",3 ],2,max)
 
-    # con library(tidyverse)
-    lluvia %>% 
-      filter(localidad == 'TRES ARROYOS-AERO') %>%
-      select(3) %>% 
-      max()
-    __________________________________________________
-    # con library(base)
-    tapply(lluvia$ene, lluvia$localidad, sum)
+# con library(tidyverse)
+lluvia %>% 
+  filter(localidad == 'TRES ARROYOS-AERO') %>%
+  select(3) %>% 
+  max()
+__________________________________________________
+# con library(base)
+tapply(lluvia$ene, lluvia$localidad, sum)
 
-    # con library(tidyverse)
-    lluvia %>% group_by(localidad) %>% 
-      summarise(total_enero = sum(ene))
-      
+# con library(tidyverse)
+lluvia %>% group_by(localidad) %>% 
+  summarise(total_enero = sum(ene))
+  
 
-    __________________________________________________
-    # con library(base)
-    tapply(lluvia$ene[lluvia$año<1970], lluvia$localidad[lluvia$año<1970], sum)
+__________________________________________________
+# con library(base)
+tapply(lluvia$ene[lluvia$año<1970], lluvia$localidad[lluvia$año<1970], sum)
 
-    # con library(tidyverse)
-    lluvia %>% 
-      filter(año<1970) %>%
-      group_by(localidad) %>%
-      summarise(total_enero = sum(ene))
-    __________________________________________________
-    # con library(base)
-    # ¿Cuántos años tiene cada localidad ?
-    tapply(lluvia$año,lluvia$localidad,  function(x) length(unique(x)))
+# con library(tidyverse)
+lluvia %>% 
+  filter(año<1970) %>%
+  group_by(localidad) %>%
+  summarise(total_enero = sum(ene))
+__________________________________________________
+# con library(base)
+# ¿Cuántos años tiene cada localidad ?
+tapply(lluvia$año,lluvia$localidad,  function(x) length(unique(x)))
 
-    # con library(tidyverse)
-    lluvia %>% group_by(localidad) %>%
-      summarise(cantidad = n_distinct(año))
-    __________________________________________________
-    # con library(base)
-    # +40
-    #años.localidad[años.localidad >40]
+# con library(tidyverse)
+lluvia %>% group_by(localidad) %>%
+  summarise(cantidad = n_distinct(año))
+__________________________________________________
+# con library(base)
+# +40
+#años.localidad[años.localidad >40]
 
-    # con library(tidyverse)
-    lluvia %>% group_by(localidad) %>%
-      summarise(cantidad = n_distinct(año)) %>% 
-      filter(cantidad > 40)
-
+# con library(tidyverse)
+lluvia %>% group_by(localidad) %>%
+  summarise(cantidad = n_distinct(año)) %>% 
+  filter(cantidad > 40)
+```
 
 ¿Queres conocer al resto de los integrantes de la familia apply?
 
-Investiga este enlace:https://bookdown.org/jboscomendoza/r-principiantes4/la-familia-apply.html
+Investiga este
+enlace:<https://bookdown.org/jboscomendoza/r-principiantes4/la-familia-apply.html>
 
 # Definición de funciones propias
 
@@ -399,8 +427,8 @@ guardarlas para reutilizarlas en otros proyectos.
 Las funciones programadas en R funciones puede que acaben en un propio
 paquetes de `R` y redistribuyéndolas entre sus colegas. No obstante, la
 creación de paquetes, aunque no es complicada, queda fuera del alcance
-de este curso.
-(Si te interesa el tema acá te dejamos este enlace:https://oscarperpinan.github.io/R/Paquetes.html)
+de este curso. (Si te interesa el tema acá te dejamos este
+enlace:<https://oscarperpinan.github.io/R/Paquetes.html>)
 
 ```{r}
 mi_suma <- function(a, b) {
@@ -472,20 +500,42 @@ datos
 ## Bucle `for`
 
 En la programación es habitual construir bucles dentro de los cuales se
-va modificando el valor de una expresión. Los bucles más habituales en R
-son los `for`. Su sintaxis es:
+va modificando el valor de una expresión.
 
-    for (var in vector){
-      # expresión que se repite
-    }
+![](Fig/loop.jpg)
+
+Al comienzo de cada bucle `for` hay un encabezado que define una colección
+de objetos, como los elementos de un vector o una lista.
+
+La cabeza va seguida de un bloque de código (es decir, el cuerpo de
+nuestro ciclo). En este bloque podemos ejecutar básicamente cualquier
+sintaxis de R que queramos.
+
+Posteriormente, el bucle `for` comprueba si llegó al último objeto de la
+colección especificado en la cabecera del bucle. Si este es el caso, el
+bucle `for` se detiene. Si este no es el caso, se repite el bloque de
+código dentro del bucle `for`.
+
+Los bucles más habituales en R son los `for`. Su sintaxis es:
+
+```         
+for (var in vector){
+  # expresión que se repite
+}
+```
 
 También se puede escribir así:
 
-    for (var in vector)  # expresión que se repite
+```         
+for (var in vector)  # expresión que se repite
+```
 
-Las llaves solo son obligatorias cuando el bloque de código contiene más de una línea.
+Las llaves solo son obligatorias cuando el bloque de código contiene más
+de una línea.
 
-Ejemplo simple
+## Ejemplos del ciclo for en R
+
+### Ejemplo 1
 
 ```{r}
 for (i in 1:5) {
@@ -494,10 +544,11 @@ for (i in 1:5) {
 }
 ```
 
+### Ejemplo 2
 
-## Ejemplos del ciclo for en R
-
-Queremos conocer la distribución de la media muestral de n observaciones obtenidas independientemente de una distribución uniforme a lo largo del intervalo (0, 1).
+Queremos conocer la distribución de la media muestral de n observaciones
+obtenidas independientemente de una distribución uniforme a lo largo del
+intervalo (0, 1).
 
 -   Generar n observaciones con distribución uniforme en (0, 1).
 
@@ -523,6 +574,8 @@ for (i in 1:rep) {
 hist(Media, breaks = 40, main = paste("n = ", n), ylab="Frecuencia")
 ```
 
+### Ejemplo 3
+
 Imagina que tenemos este simple tibble:
 
 ```{r}
@@ -536,8 +589,10 @@ df <- tibble(
 df
 ```
 
+### Ejemplo 4
 
-Queremos calcular la mediana de cada columna. Podrías hacerlo copiando y pegando el siguiente código:
+Queremos calcular la mediana de cada columna. Podrías hacerlo copiando y
+pegando el siguiente código:
 
 ```{r}
 median(df$a)
@@ -546,7 +601,8 @@ median(df$c)
 median(df$d)
 ```
 
-Pero eso rompe una regla de oro: nunca copiar y pegar más de dos veces. En cambio, podríamos usar un bucle for:
+Pero eso rompe una regla de oro: nunca copiar y pegar más de dos veces.
+En cambio, podríamos usar un bucle for:
 
 ```{r}
 output <- vector("double", ncol(df))  # 1. output
@@ -556,9 +612,9 @@ for (i in seq_along(df)) {            # 2. secuencia
 output
 ```
 
+### Ejemplo 5
 
-Veamos como usarlo en la base de datos lluvia
-
+Veamos como usarlo en la base de datos lluvia, queremos obtener la suma de la precipitación de cada mes en cada localidad
 
 ```{r}
 library(readxl)
@@ -566,7 +622,8 @@ lluvia.inta<- read_excel("lluvia_pampa.xlsx")
 head(lluvia.inta)
 ```
 
-
+Vamos a acomodar los datos usando la función `pivot_longer`
+ver: vignette("pivot")
 
 ```{r message=FALSE, warning=TRUE}
 # Pasa a 4 variables y elimina las ultima 3 columnas
@@ -575,6 +632,7 @@ lluvia <- lluvia.inta[-c(15:17)] %>% pivot_longer(!c(localidad, año),
                                              values_to = 'ppm')
 ```
 
+Este podría ser el código a usar: 
 
 ```{r}
 lluvia%>%
@@ -582,6 +640,7 @@ lluvia%>%
  summarise(total = sum(ppm))
 ```
 
+Lo podemos convertir en una función
 
 ```{r}
 precip<-function(data,lugar,fecha){
@@ -592,10 +651,15 @@ precip<-function(data,lugar,fecha){
 
 precip(lluvia,"MAR DEL PLATA-AERO","ene")
 ```
+
+Esta función la deberíamos aplicar a cada mes de cada localidad
+
 ```{r}
 head(lugar<-unique(lluvia$localidad))
 head(meses<-unique(lluvia$mes))
 ```
+
+Los podemos hacer usando un loop
 
 ```{r}
 resultado<-data.frame()
@@ -608,6 +672,4 @@ resultado<-rbind(resultado,sum.prep)
   
 ```
 
-
-
-
+Para más ejemplos de loop ver: https://statisticsglobe.com/for-loop-in-r
