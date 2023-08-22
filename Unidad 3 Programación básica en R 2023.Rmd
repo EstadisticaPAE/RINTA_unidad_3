@@ -415,17 +415,21 @@ enlace:<https://bookdown.org/jboscomendoza/r-principiantes4/la-familia-apply.htm
 
 # Definición de funciones propias
 
-`R` también es un lenguaje de programación aunque se utilice poco para
-desarrollar programas largos con `R` al estilo de los que se crean con
-Java, C++ u otros lenguajes.
+`R` también es un lenguaje que permite generar programas largos y
+complejos aunque se utilice poco para desarrollar programas al estilo de
+los que se crean con Java, C++ u otros lenguajes.
 
 Normalmente programar `R` es crear funciones útiles en un contexto
 determinado: pueden crearse para ser utilizadas en un único proyecto o
 en una parte muy concreta o pequeña del mismo. También puede querer
-guardarlas para reutilizarlas en otros proyectos.
+guardarlas para reutilizarlas en otros proyectos, o incluso
+reutilizarlas varias veces en un mismo proyecto para evitar la
+repetición de código y minimizar la chance de incurrir en errores al
+hacerlo.
 
-Las funciones programadas en R funciones puede que acaben en un propio
-paquetes de `R` y redistribuyéndolas entre sus colegas. No obstante, la
+Las funciones programadas `R` pueden guardarse en un paquete de `R` (al
+igual que como se utilizan en este manual las funciones del paquete
+`Tidyverse`) y redistribuirse entre sus colegas. No obstante, la
 creación de paquetes, aunque no es complicada, queda fuera del alcance
 de este curso. (Si te interesa el tema acá te dejamos este
 enlace:<https://oscarperpinan.github.io/R/Paquetes.html>)
@@ -452,7 +456,12 @@ mi_suma(3, 4)
 
 Puede verse como la función también se convirtió en un objeto R; es
 decir, aparece en los listados de `ls()`, que se puede borrar con
-`rm()`, etc.:
+`rm()`, se puede visualizar en el panel de Environment, etc.
+
+![Panel de environment en el que figuran las funciones
+guardadas](Fig/consola_funcion.png)
+
+$\\$
 
 El bloque de código es un conjunto de líneas que se ejecutan
 secuencialmente y que se encierran con llaves {}. Sin embargo, no son
@@ -495,6 +504,108 @@ datos<-c(potencia(2), potencia(2, 3), potencia(2, exponente = 3))
 datos
 ```
 
+## Funciones con tidyverse
+
+A continuación generemos una función útil para extraer datos de nuestra
+base de lluvias.
+
+En primer lugar vamos a acomodar los datos usando la función
+`pivot_longer` ver: vignette("pivot")
+
+```{r message=FALSE, warning=TRUE}
+# Pasa a 4 variables y elimina las ultima 3 columnas
+library(tidyverse)
+
+lluvia_pivot <- lluvia[-c(15:17)] %>% pivot_longer(!c(localidad, año),
+                                             names_to = 'mes',
+                                             values_to = 'ppm')
+head(lluvia_pivot, 10)
+```
+
+De esta manera nuestra tabla de precipitaciones tendrá un formato "tidy"
+u "ordenado", en el que cada columna es una variable, cada fila es una
+observación y cada celda contiene un valor.
+
+![Imagen del libro R para Ciencia de Datos](Fig/tidy-1.svg) 
+
+$\\$
+
+Habiendo ordenado nuestra base de datos, vamos a generar una función
+para **obtener la suma de las precipitaciónes de un mes específico en
+una localidad puntual**.
+
+En caso de no generar una función, este podría ser el código a usar para
+obtener, por ejemplo, los datos de febrero para EZEIZA-AERO:
+
+```{r}
+lluvia_pivot%>%
+ filter(mes=="feb" & # Filtro mes
+          localidad=="EZEIZA-AERO" ) %>% # Filtro localidad
+ summarise(total = sum(ppm)) # Obtengo el total de la variable ppm
+```
+
+Vamos a generar una función en 3 pasos, a fines ilustrativos
+
+1.  Función que en base a el dataset, filtre por el mes indicado
+
+2.  Función que en base a el dataset, filtre por el mes y la localidad
+    indicada
+
+3.  Función que en base a el dataset, filtre por el mes y la localidad
+    indicada y obtenga el total de la variable ppm
+
+<!-- -->
+
+Función que en base a el dataset filtre por el **mes** indicado
+
+```{r}
+mi_funcion <- function(data, mes_elegido) {
+  data %>% 
+    filter(mes == mes_elegido)
+}
+```
+
+La aplicamos
+
+```{r}
+mi_funcion(lluvia_pivot, "feb")
+```
+
+Función que en base a el dataset filtre por el **mes** y **localidad**
+indicada
+
+```{r}
+mi_funcion <- function(data, mes_elegido, localidad_elegida) {
+  data %>% 
+    filter(mes == mes_elegido,
+           localidad == localidad_elegida)
+}
+```
+
+La aplicamos
+
+```{r}
+mi_funcion(lluvia_pivot, "feb", "EZEIZA-AERO")
+```
+
+Función que en base a el dataset filtre por el mes y localidad indicada
+y devuelva el **total** de precipitaciones
+
+```{r}
+mi_funcion <- function(data, mes_elegido, localidad_elegida) {
+  data %>% 
+    filter(mes == mes_elegido,
+           localidad == localidad_elegida) %>% 
+    summarise(total =sum(ppm))
+}
+```
+
+La aplicamos
+
+```{r}
+mi_funcion(lluvia_pivot, "feb", "EZEIZA-AERO")
+```
+
 # Procesos iterativos
 
 ## Bucle `for`
@@ -504,8 +615,8 @@ va modificando el valor de una expresión.
 
 ![](Fig/loop.jpg)
 
-Al comienzo de cada bucle `for` hay un encabezado que define una colección
-de objetos, como los elementos de un vector o una lista.
+Al comienzo de cada bucle `for` hay un encabezado que define una
+colección de objetos, como los elementos de un vector o una lista.
 
 La cabeza va seguida de un bloque de código (es decir, el cuerpo de
 nuestro ciclo). En este bloque podemos ejecutar básicamente cualquier
@@ -574,102 +685,5 @@ for (i in 1:rep) {
 hist(Media, breaks = 40, main = paste("n = ", n), ylab="Frecuencia")
 ```
 
-### Ejemplo 3
-
-Imagina que tenemos este simple tibble:
-
-```{r}
-library(tidyverse)
-df <- tibble(
-  a = rnorm(10),
-  b = rnorm(10),
-  c = rnorm(10),
-  d = rnorm(10)
-)
-df
-```
-
-### Ejemplo 4
-
-Queremos calcular la mediana de cada columna. Podrías hacerlo copiando y
-pegando el siguiente código:
-
-```{r}
-median(df$a)
-median(df$b)
-median(df$c)
-median(df$d)
-```
-
-Pero eso rompe una regla de oro: nunca copiar y pegar más de dos veces.
-En cambio, podríamos usar un bucle for:
-
-```{r}
-output <- vector("double", ncol(df))  # 1. output
-for (i in seq_along(df)) {            # 2. secuencia
-  output[[i]] <- median(df[[i]])      # 3. cuerpo
-}
-output
-```
-
-### Ejemplo 5
-
-Veamos como usarlo en la base de datos lluvia, queremos obtener la suma de la precipitación de cada mes en cada localidad
-
-```{r}
-library(readxl)
-lluvia.inta<- read_excel("lluvia_pampa.xlsx")
-head(lluvia.inta)
-```
-
-Vamos a acomodar los datos usando la función `pivot_longer`
-ver: vignette("pivot")
-
-```{r message=FALSE, warning=TRUE}
-# Pasa a 4 variables y elimina las ultima 3 columnas
-lluvia <- lluvia.inta[-c(15:17)] %>% pivot_longer(!c(localidad, año),
-                                             names_to = 'mes',
-                                             values_to = 'ppm')
-```
-
-Este podría ser el código a usar: 
-
-```{r}
-lluvia%>%
- filter(mes=="ene" & localidad=="MAR DEL PLATA-AERO" ) %>%
- summarise(total = sum(ppm))
-```
-
-Lo podemos convertir en una función
-
-```{r}
-precip<-function(data,lugar,fecha){
- data%>%
- filter(localidad==lugar & mes==fecha ) %>%
- summarise(total = sum(ppm))
-}
-
-precip(lluvia,"MAR DEL PLATA-AERO","ene")
-```
-
-Esta función la deberíamos aplicar a cada mes de cada localidad
-
-```{r}
-head(lugar<-unique(lluvia$localidad))
-head(meses<-unique(lluvia$mes))
-```
-
-Los podemos hacer usando un loop
-
-```{r}
-resultado<-data.frame()
-for (i in lugar) {
-  for (j in meses) {
-sum.prep<- data.frame(precip(lluvia,i,j ), i, j) 
-resultado<-rbind(resultado,sum.prep)
-  }
-}
-  
-```
-
-Para más ejemplos de loop ver: https://statisticsglobe.com/for-loop-in-r
+Para más ejemplos de loop ver:
+<https://statisticsglobe.com/for-loop-in-r>
